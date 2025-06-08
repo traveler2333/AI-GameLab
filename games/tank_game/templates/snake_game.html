@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇网页版</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/snake_style.css') }}">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>贪吃蛇</h1>
+        <div class="ui-container">
+            <div id="scoreDisplay">分数: 0</div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="gameOverScreen" style="display:none;">
+            <h2>游戏结束!</h2>
+            <p>最终分数: <span id="finalScore">0</span></p>
+            <button id="restartButtonSnake">重新开始</button>
+        </div>
+        <p><a href="{{ url_for('lobby') }}">返回游戏大厅</a></p>
+    </div>
+    <script src="{{ url_for('static', filename='js/snake_script.js') }}"></script>
+</body>
+</html>

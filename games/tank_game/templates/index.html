@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tank Game Deluxe</title>
+    <style>
+        body { margin: 0; display: flex; flex-direction: column; align-items: center; background-color: #1a202c; color: #e2e8f0; font-family: 'Roboto', sans-serif; user-select: none; }
+        #topBar { display: flex; justify-content: space-between; width: 800px; margin-bottom: 8px; padding: 8px 12px; background-color: #2d3748; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .uiElement { font-size: 18px; padding: 5px 10px; font-weight: 500; }
+        #gameContainer { position: relative; border: 3px solid #4a5568; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
+        canvas { background-color: #4a5568; display: block; } /* Darker canvas background */
+        #gameOverScreen {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(26, 32, 44, 0.92); color: white;
+            display: none; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            backdrop-filter: blur(3px);
+        }
+        #gameOverMessage { font-size: 48px; margin-bottom: 15px; text-shadow: 3px 3px #000; font-weight: 700; }
+        #finalScoreDisplay, #sessionHighScoreDisplay { font-size: 28px; margin-bottom: 20px; }
+        #restartButton {
+            font-size: 24px; padding: 15px 30px; cursor: pointer;
+            border: none; background-color: #38a169; color: white; border-radius: 8px;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        #restartButton:hover { background-color: #48bb78; transform: translateY(-2px); }
+        #restartButton:active { transform: translateY(0px); }
+
+        #gameEventsDisplay {
+            width: 220px;
+            position: absolute;
+            right: -235px;
+            top: 0;
+            height: 250px;
+            background-color: rgba(45, 55, 72, 0.88);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            overflow-y: auto;
+            color: #a0aec0;
+            border: 1px solid #2d3748;
+        }
+        #gameEventsDisplay p { margin: 6px 0; padding-bottom: 4px; border-bottom: 1px solid #4a5568; line-height: 1.4; }
+        #gameEventsDisplay p:last-child { border-bottom: none; }
+        #controlsDisplay {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background-color: rgba(45, 55, 72, 0.7);
+            color: #a0aec0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div id="topBar">
+        <div id="scoreDisplay" class="uiElement">Score: 0</div>
+        <div id="levelDisplay" class="uiElement">Level: 1</div>
+        <div id="highScoreDisplay" class="uiElement">High Score: 0</div>
+    </div>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="gameEventsDisplay"></div>
+        <div id="controlsDisplay">WASD/Arrows: Move/Rotate | Space: Shoot</div>
+        <div id="gameOverScreen">
+            <div id="gameOverMessage">Game Over!</div>
+            <div id="finalScoreDisplay">Final Score: <span id="finalScoreValue">0</span></div>
+            <div id="sessionHighScoreDisplay">High Score: <span id="sessionHighScoreValue">0</span></div>
+            <button id="restartButton">Restart Game</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const socket = io();
+
+        const TANK_BODY_WIDTH = 20;
+        const TANK_BODY_HEIGHT = 30;
+        const TURRET_WIDTH = 5; // Slightly thicker turret
+        const TURRET_LENGTH = 22; // Slightly longer turret
+        const BULLET_RADIUS = 4;
+
+        let isGameOver = false;
+        let activeEffects = []; // For impact effects
+
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScoreValueDisplay = document.getElementById('finalScoreValue');
+        const sessionHighScoreValueDisplay = document.getElementById('sessionHighScoreValue');
+        const restartButton = document.getElementById('restartButton');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+        const gameEventsDisplay = document.getElementById('gameEventsDisplay');
+
+        // --- Impact Effect System ---
+        function createImpactEffect(x, y, type = 'bullet') {
+            let effect = { x, y, type, alive: true };
+            if (type === 'bullet') {
+                effect.radius = Math.random() * 3 + 2; // Small sparks
+                effect.particles = Array(5).fill().map(() => ({
+                    x: 0, y: 0,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    alpha: 1,
+                    size: Math.random() * 2 + 1,
+                    color: `rgba(255, 223, 186, ${Math.random()*0.5 + 0.5})` // Light orange/yellow sparks
+                }));
+                effect.duration = 20; // frames
+            } else if (type === 'tank_explosion') {
+                effect.particles = Array(30).fill().map(() => ({
+                    x: 0, y: 0,
+                    vx: (Math.random() - 0.5) * (Math.random() * 8 + 4), // Wider spread
+                    vy: (Math.random() - 0.5) * (Math.random() * 8 + 4),
+                    alpha: 1,
+                    size: Math.random() * 4 + 2,
+                    color: `rgba(${Math.random()*100+155}, ${Math.random()*100+50}, 0, ${Math.random()*0.5 + 0.5})` // Oranges, reds
+                }));
+                effect.duration = 40; // frames
+            } else if (type === 'obstacle_hit') {
+                 effect.particles = Array(8).fill().map(() => ({
+                    x: 0, y: 0,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    alpha: 1,
+                    size: Math.random() * 2 + 1,
+                    color: `rgba(150, 150, 150, ${Math.random()*0.5 + 0.5})` // Grey sparks
+                }));
+                effect.duration = 25;
+            }
+            activeEffects.push(effect);
+        }
+
+        function drawAndUpdateEffects() {
+            for (let i = activeEffects.length - 1; i >= 0; i--) {
+                const effect = activeEffects[i];
+                effect.duration--;
+                if (effect.duration <= 0) {
+                    activeEffects.splice(i, 1);
+                    continue;
+                }
+
+                ctx.save();
+                ctx.translate(effect.x, effect.y);
+                effect.particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha = Math.max(0, effect.duration / (effect.type === 'tank_explosion' ? 40 : (effect.type === 'obstacle_hit' ? 25 : 20) ) ); // Fade out
+                    ctx.fillStyle = p.color.replace(/,\s?(\d?\.?\d+)\)/, `, ${p.alpha})`); // Update alpha in rgba string
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.restore();
+            }
+        }
+
+        // --- Drawing Functions ---
+        function drawObstacle(obstacle) {
+            ctx.fillStyle = '#6c757d'; // Bootstrap's secondary color, a nice grey
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            ctx.strokeStyle = '#343a40'; // Bootstrap's dark color
+            ctx.lineWidth = 2;
+            ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        }
+
+        function drawTank(tank_data) {
+            if (tank_data.status === 'destroyed') {
+                // Explosion effect is now primary, maybe a scorch mark?
+                ctx.fillStyle = 'rgba(40, 40, 40, 0.5)';
+                ctx.beginPath();
+                ctx.ellipse(tank_data.x, tank_data.y, TANK_BODY_WIDTH * 0.7, TANK_BODY_HEIGHT * 0.7, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                return;
+            }
+
+            ctx.save();
+            ctx.translate(tank_data.x, tank_data.y);
+            ctx.rotate(tank_data.angle);
+            // Tank Body
+            ctx.fillStyle = tank_data.color || '#95a5a6';
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); // Custom tank shape
+            ctx.moveTo(-TANK_BODY_WIDTH/2, -TANK_BODY_HEIGHT/2);
+            ctx.lineTo(TANK_BODY_WIDTH/2, -TANK_BODY_HEIGHT/2);
+            ctx.lineTo(TANK_BODY_WIDTH/2 * 0.8, TANK_BODY_HEIGHT/2); // Slightly tapered back
+            ctx.lineTo(-TANK_BODY_WIDTH/2 * 0.8, TANK_BODY_HEIGHT/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Turret
+            ctx.fillStyle = '#34495e';
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 1;
+            // Make turret base slightly wider than barrel
+            ctx.fillRect(-TURRET_WIDTH/2, -TURRET_WIDTH, TURRET_WIDTH, TURRET_WIDTH*1.5); // Base
+            ctx.strokeRect(-TURRET_WIDTH/2, -TURRET_WIDTH, TURRET_WIDTH, TURRET_WIDTH*1.5);
+            ctx.fillRect(-TURRET_WIDTH/2 + 1, -TURRET_LENGTH*0.2 , TURRET_WIDTH-2, TURRET_LENGTH); // Barrel
+            ctx.strokeRect(-TURRET_WIDTH/2 + 1, -TURRET_LENGTH*0.2, TURRET_WIDTH-2, TURRET_LENGTH);
+
+
+            ctx.restore();
+        }
+
+        function drawBullet(bullet) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(bullet.x, bullet.y, BULLET_RADIUS, 0, 2 * Math.PI);
+            ctx.fillStyle = bullet.color || 'black';
+            ctx.fill();
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = bullet.color || 'white';
+            ctx.globalAlpha = 0.7; // Make shadow slightly transparent
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawTarget(target) {
+            if (target.status === 'active') {
+                ctx.fillStyle = '#8e44ad'; // Darker Amethyst
+                ctx.strokeStyle = '#5e3370';
+            } else if (target.status === 'hit') {
+                ctx.fillStyle = 'rgba(142, 68, 173, 0.2)';
+                ctx.strokeStyle = 'rgba(94, 36, 117, 0.2)';
+            }
+            if (target.status === 'active' || target.status === 'hit') {
+                 ctx.lineWidth = 2;
+                 // Draw as a circle target
+                 ctx.beginPath();
+                 ctx.arc(target.x + target.width/2, target.y + target.height/2, target.width/2, 0, 2*Math.PI);
+                 ctx.fill();
+                 ctx.stroke();
+                 if(target.status === 'active'){ // Bullseye
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(target.x + target.width/2, target.y + target.height/2, target.width/4, 0, 2*Math.PI);
+                    ctx.fill();
+                 }
+            }
+        }
+
+        // --- Game State Update and Input ---
+        let lastGameState = {}; // To detect changes for effects
+
+        // Emit tank_connect when socket is ready and connected
+        socket.on('connect', () => {
+            console.log("Connected to main server for Tank game.");
+            socket.emit('tank_connect'); // Signal server that a tank client has connected
+        });
+
+        socket.on('tank_update_state', function(gameState) { // Listen for tank-specific state updates
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            isGameOver = gameState.is_over;
+
+            // --- Detect events for effects (Tank Game) ---
+            // --- Detect events for effects ---
+            // Bullets that hit obstacles (server now marks them with 'hit_obstacle')
+            if (gameState.bullets && lastGameState.bullets) {
+                 gameState.bullets.forEach(bullet => {
+                    // Find this bullet in the previous state
+                    const prevBullet = lastGameState.bullets.find(pb => pb.id === bullet.id);
+                    // If it just got marked as hit_obstacle this frame OR if it's a new bullet marked as such
+                    // (The server removes bullets that hit obstacles immediately, so we need to catch them as they are marked)
+                    // The server doesn't send bullets that were removed. So, we check lastGameState.
+                    if (!prevBullet) return; // New bullet, can't compare yet for this logic
+                 });
+
+                // More robust: Check bullets that disappeared from the list
+                lastGameState.bullets.forEach(lastB => {
+                    const currentB = gameState.bullets.find(b => b.id === lastB.id);
+                    if(!currentB) { // Bullet was removed
+                        if(lastB.hit_obstacle) { // Server marked it before removing
+                            createImpactEffect(lastB.x, lastB.y, 'obstacle_hit');
+                        }
+                        // Could add other checks here: e.g. if it hit a target, if it hit an active tank (non-fatal hit)
+                        else { // If not obstacle, could be a non-fatal tank hit or target hit
+                            let hitActiveTank = false;
+                            if(gameState.ai_tanks) {
+                                for(const tank of gameState.ai_tanks) {
+                                    if (tank.status === 'active' && Math.hypot(lastB.x - tank.x, lastB.y - tank.y) < TANK_COLLISION_RADIUS + BULLET_RADIUS) {
+                                        createImpactEffect(lastB.x, lastB.y, 'bullet'); hitActiveTank = true; break;
+                                    }
+                                }
+                            }
+                            if(!hitActiveTank && gameState.player_tank && gameState.player_tank.status === 'active') {
+                                 if (Math.hypot(lastB.x - gameState.player_tank.x, lastB.y - gameState.player_tank.y) < TANK_COLLISION_RADIUS + BULLET_RADIUS) {
+                                     createImpactEffect(lastB.x, lastB.y, 'bullet'); hitActiveTank = true;
+                                 }
+                            }
+                            // Note: Target hits don't have specific small bullet impact effects here, but could be added.
+                        }
+                    }
+                });
+            }
+
+            // Tank explosions (player and AI)
+            if (gameState.player_tank && gameState.player_tank.status === 'destroyed' &&
+                lastGameState.player_tank && lastGameState.player_tank.status === 'active') {
+                createImpactEffect(gameState.player_tank.x, gameState.player_tank.y, 'tank_explosion');
+            }
+            if (gameState.ai_tanks && lastGameState.ai_tanks) {
+                gameState.ai_tanks.forEach(currentAi => {
+                    const prevAi = lastGameState.ai_tanks.find(ai => ai.id === currentAi.id);
+                    if (currentAi.status === 'destroyed' && prevAi && prevAi.status === 'active') {
+                        createImpactEffect(currentAi.x, currentAi.y, 'tank_explosion');
+                    }
+                });
+            }
+
+            lastGameState = JSON.parse(JSON.stringify(gameState)); // Deep copy for next frame comparison
+
+            // --- Drawing ---
+            if (gameState.map && gameState.map.obstacles) gameState.map.obstacles.forEach(drawObstacle);
+            if (gameState.targets) gameState.targets.forEach(drawTarget);
+            if (gameState.player_tank) drawTank(gameState.player_tank);
+            if (gameState.ai_tanks) { // Filter out AI tanks marked 'destroyed' from drawing, explosion handles visuals
+                 gameState.ai_tanks.filter(t => t.status === 'active').forEach(drawTank);
+            }
+            if (gameState.bullets) gameState.bullets.forEach(drawBullet);
+            drawAndUpdateEffects(); // Draw and manage active effects
+
+            // --- UI Updates ---
+            scoreDisplay.textContent = 'Score: ' + (gameState.score || 0);
+            levelDisplay.textContent = 'Level: ' + (gameState.current_level || 1);
+            highScoreDisplay.textContent = 'High Score: ' + (gameState.high_score || 0);
+
+            gameEventsDisplay.innerHTML = '';
+            if (gameState.game_events) {
+                gameState.game_events.forEach(eventMsg => {
+                    const eventElement = document.createElement('p');
+                    eventElement.textContent = eventMsg;
+                    gameEventsDisplay.appendChild(eventElement);
+                });
+            }
+
+            if (isGameOver) {
+                finalScoreValueDisplay.textContent = gameState.score || 0;
+                sessionHighScoreValueDisplay.textContent = gameState.high_score || 0;
+                gameOverScreen.style.display = 'flex';
+            } else {
+                gameOverScreen.style.display = 'none';
+            }
+        });
+
+        const keyState = {};
+        document.addEventListener('keydown', function(event) {
+            keyState[event.key.toLowerCase()] = true;
+            if (event.key === ' ') event.preventDefault();
+        });
+        document.addEventListener('keyup', function(event) {
+            keyState[event.key.toLowerCase()] = false;
+        });
+
+        let shootCooldown = 0; // Player shoot cooldown
+        const PLAYER_SHOOT_COOLDOWN_TICKS = 10; // Approx 500ms if interval is 50ms
+
+        function handleInput() {
+            if (isGameOver) return;
+            if (shootCooldown > 0) shootCooldown--;
+
+            let movePayload = null;
+            let rotatePayload = null;
+
+            if (keyState['arrowup'] || keyState['w']) movePayload = { action: 'move', direction: 'forward' };
+            else if (keyState['arrowdown'] || keyState['s']) movePayload = { action: 'move', direction: 'backward' };
+
+            if (keyState['arrowleft'] || keyState['a']) rotatePayload = { action: 'rotate', direction: 'left' };
+            else if (keyState['arrowright'] || keyState['d']) rotatePayload = { action: 'rotate', direction: 'right' };
+
+            if (movePayload) socket.emit('tank_player_input', movePayload); // Prefixed event
+            if (rotatePayload) socket.emit('tank_player_input', rotatePayload); // Prefixed event
+
+            if (keyState[' '] && tankShootCooldown <= 0) { // Use tankShootCooldown
+                socket.emit('tank_player_input', {action: 'shoot'}); // Prefixed event
+                tankShootCooldown = TANK_PLAYER_SHOOT_COOLDOWN_TICKS; // Use TANK_PLAYER_SHOOT_COOLDOWN_TICKS
+            }
+        }
+        setInterval(handleTankInput, 30); // Renamed handler
+
+        restartButton.addEventListener('click', function() { socket.emit('tank_restart_game'); }); // Prefixed event
+    </script>
+</body>
+</html>

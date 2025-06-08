@@ -1,0 +1,71 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.container {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #2c3e50;
+}
+
+.ui-container {
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+#gameCanvas {
+    border: 3px solid #34495e;
+    background-color: #ecf0f1; /* Light grey canvas background */
+}
+
+#gameOverScreen {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgba(52, 73, 94, 0.9); /* Dark overlay */
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#gameOverScreen h2 {
+    margin-top: 0;
+    color: #e74c3c; /* Red for game over */
+}
+
+#restartButtonSnake {
+    background-color: #2ecc71; /* Green */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#restartButtonSnake:hover {
+    background-color: #27ae60; /* Darker green */
+}
+
+a {
+    color: #3498db; /* Blue link */
+    text-decoration: none;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+a:hover {
+    text-decoration: underline;
+}
