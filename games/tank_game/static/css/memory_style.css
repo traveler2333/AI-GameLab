@@ -1,0 +1,117 @@
+body {
+    font-family: 'Roboto', sans-serif; /* Changed font */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.game-container {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.info-bar {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* For a 4x4 grid */
+    gap: 10px;
+    width: 320px;
+    height: 320px;
+    margin: 0 auto 20px auto;
+    perspective: 1000px;
+}
+
+.card {
+    width: 70px;
+    height: 70px;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.6s, background-color 0.3s;
+    transform-style: preserve-3d;
+    user-select: none;
+}
+
+.card .card-content {
+    display: none;
+    transform: rotateY(180deg);
+}
+
+.card.flipped {
+    background-color: #e9ecef;
+    color: #333;
+    transform: rotateY(180deg);
+}
+
+.card.flipped .card-content {
+    display: block;
+}
+.card.hidden-symbol .card-content {
+    display: none;
+}
+
+
+.card.matched {
+    background-color: #28a745;
+    color: white;
+    cursor: default;
+    transform: rotateY(0deg);
+    opacity: 0.7;
+}
+.card.matched .card-content {
+    display: block;
+}
+
+
+#memoryRestartButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 25px; /* Consistent padding */
+    font-size: 1em;
+    border-radius: 8px; /* Consistent radius */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s ease; /* Consistent transition */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Consistent shadow */
+    margin-bottom: 15px;
+}
+
+#memoryRestartButton:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px); /* Consistent hover */
+}
+#memoryRestartButton:active {
+    transform: translateY(0px); /* Consistent active */
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

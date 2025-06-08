@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-TF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 游戏大厅</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lobby_style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>🎮 AI 游戏大厅 🚀</h1>
+    </header>
+    <main>
+        <div class="game-grid">
+            <div class="game-card" data-game="tank">
+                <h2>坦克大战</h2>
+                <p>驾驶坦克，消灭敌人！</p>
+                <img src="{{ url_for('static', filename='images/tank_preview.png') }}" alt="坦克大战预览">
+            </div>
+            <div class="game-card" data-game="snake">
+                <h2>贪吃蛇</h2>
+                <p>经典的贪吃蛇游戏。</p>
+                 <img src="{{ url_for('static', filename='images/snake_preview.png') }}" alt="贪吃蛇预览">
+            </div>
+            <div class="game-card" data-game="memory">
+                <h2>记忆匹配</h2>
+                <p>考验你的记忆力。</p>
+                <img src="{{ url_for('static', filename='images/memory_preview.png') }}" alt="记忆匹配预览">
+            </div>
+            <div class="game-card" data-game="hangman">
+                <h2>猜单词 (Hangman)</h2>
+                <p>猜出隐藏的单词。</p>
+                <img src="{{ url_for('static', filename='images/hangman_preview.png') }}" alt="猜单词预览">
+            </div>
+            <div class="game-card" data-game="gobang">
+                <h2>智能五子棋</h2>
+                <p>与AI对战五子棋。</p>
+                <img src="{{ url_for('static', filename='images/gobang_preview.png') }}" alt="智能五子棋预览">
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 AI GameLab</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/lobby_script.js') }}"></script>
+</body>
+</html>

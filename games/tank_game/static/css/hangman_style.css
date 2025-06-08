@@ -1,0 +1,158 @@
+body {
+    font-family: 'Roboto', sans-serif; /* Changed font */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.game-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+}
+
+#hangmanDrawing {
+    width: 200px;
+    height: 150px;
+    margin: 0 auto 20px auto;
+    border: 2px dashed #bdc3c7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ecf0f1;
+}
+
+#hangmanDrawing p {
+    font-size: 1.1em;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.word-display {
+    font-size: 2.5em;
+    letter-spacing: 8px;
+    margin-bottom: 25px;
+    padding: 10px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #34495e;
+}
+
+#guessedLettersDisplay {
+    margin-bottom: 20px;
+    font-size: 1em;
+    color: #555;
+    min-height: 20px;
+}
+#guessedLettersDisplay span {
+    font-weight: bold;
+    color: #3498db;
+}
+
+
+.game-status {
+    margin-bottom: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    min-height: 30px;
+}
+.game-status.won {
+    color: #2ecc71;
+}
+.game-status.lost {
+    color: #e74c3c;
+}
+
+.input-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+#letterInput {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+    text-align: center;
+    text-transform: uppercase;
+    border: 2px solid #bdc3c7;
+    border-radius: 5px;
+    padding: 5px;
+}
+#letterInput:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+#guessButton {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 20px; /* Guess button has specific padding, keep it */
+    font-size: 1em;
+    border-radius: 8px; /* Consistent radius for guess button */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s ease; /* Consistent transition */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Consistent shadow */
+}
+
+#guessButton:hover { /* Separated hover */
+    background-color: #2980b9;
+    transform: translateY(-1px); /* Consistent hover */
+}
+#guessButton:active {
+    transform: translateY(0px); /* Consistent active */
+}
+
+#hangmanRestartButton {
+    background-color: #7f8c8d; /* Using a grey for secondary action */
+    color: white; /* Ensure text is white like other buttons */
+    border: none;
+    margin-bottom: 15px;
+    padding: 12px 25px; /* Consistent padding */
+    font-size: 1em; /* Consistent font size */
+    border-radius: 8px; /* Consistent radius */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s ease; /* Consistent transition */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Consistent shadow */
+}
+#hangmanRestartButton:hover {
+    background-color: #6c757d; /* Darker grey */
+    transform: translateY(-1px); /* Consistent hover */
+}
+#hangmanRestartButton:active {
+    transform: translateY(0px); /* Consistent active */
+}
+
+
+a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+a:hover {
+    text-decoration: underline;
+}

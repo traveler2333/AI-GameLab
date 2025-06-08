@@ -1,31 +1,84 @@
-# 🎮 AI-GameLab [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)](https://python.org)
+# 🎮 AI 智能游戏平台 🚀
 
-<div align="center">
-  <img src="https://64.media.tumblr.com/85e28b2c1364a2084bd7a6727add810a/bf7dea713bb52297-ac/s1280x1920/0f03a27d7d10f150b8abba46376358eb72e1bd89.gif" width="400">
-</div>
+欢迎来到 AI 智能游戏平台！这是一个集成了多款经典小游戏并通过网页界面提供统一访问入口的项目。您可以与 AI 对战，或者享受经典的单人游戏体验。本项目采用现代化的 Web 技术栈构建，旨在提供流畅且有趣的游戏体验。
 
-下一代智能小游戏集合库，融合：
-- 🤖 **强化学习AI对手**
-- 🎨 **现代化交互界面**
-- 📊 **实时对战数据可视化**
-- 🚀 **模块化游戏架构**
+## 🌟 特色
 
-## 🌟 特色项目展示
-### 🎮智能五子棋 Gobang AI [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+-   **完全基于 Web**: 所有游戏均可通过浏览器访问和游玩，无需安装额外客户端。
+-   **统一游戏大厅**: 提供一个美观易用的游戏大厅，方便选择和启动不同游戏。
+-   **多样化的游戏选择**:
+    -   **坦克大战**: 包含 AI 对手、多级难度、障碍物和得分系统。
+    -   **贪吃蛇**: 经典的贪吃蛇游戏，挑战你的反应速度。
+    -   **记忆匹配**: 翻牌配对游戏，考验你的记忆力。
+    -   **猜单词 (Hangman)**: 经典的猜字母游戏，挑战你的词汇量。
+    -   **智能五子棋**: 与 AI 对战的五子棋游戏。
+-   **实时交互**: 使用 Socket.IO 实现客户端与服务器之间的实时数据同步，保证游戏过程的流畅性。
+-   **AI 对手**: 部分游戏包含 AI 对手，提供不同程度的挑战。
+-   **响应式设计**: 游戏界面和游戏大厅力求在不同设备上均有良好表现 (具体游戏的响应式程度可能不同)。
 
-施工中……
+## 🕹️ 游戏列表
 
-### 🐍 Snake Game
-A classic arcade game where you control a growing snake to eat food and avoid collisions.
-- **How to Run:** `python games/snake/main.py`
+1.  **坦克大战 (Tank Battle Royale)**
+    *   **描述**: 驾驶你的坦克在战场上与 AI 坦克对战。通过消灭敌人和目标来获取分数，不断挑战更高难度的关卡。地图上会随机生成障碍物，增加游戏挑战性。
+    *   **玩法**: 使用方向键或 WASD 控制坦克移动和旋转，空格键发射子弹。
 
-### 🧠 Memory Game (Concentration)
-Test your memory by finding matching pairs of cards.
-- **How to Run:** `python games/memory/main.py`
+2.  **贪吃蛇 (Snake)**
+    *   **描述**: 控制小蛇吃食物，每吃一个食物，蛇的身体就会变长，同时得分增加。注意不要撞到墙壁或自己的身体。
+    *   **玩法**: 使用方向键或 WASD 控制蛇的移动方向。
 
-### 💀 Hangman Game
-Guess the hidden word letter by letter before the hangman is fully drawn.
-- **How to Run:** `python games/hangman/main.py`
+3.  **记忆匹配 (Memory Match)**
+    *   **描述**: 棋盘上有多对隐藏的卡片，玩家需要轮流翻开两张卡片。如果两张卡片图案相同，则配对成功并保持翻开状态；否则，卡片会重新盖上。目标是找出所有配对。
+    *   **玩法**: 点击卡片进行翻开和匹配。
 
-## 🤝 参与贡献
-欢迎提交Issue或PR，遵循MIT开源协议
+4.  **猜单词 (Hangman)**
+    *   **描述**: 系统会随机选择一个单词，玩家需要通过猜测字母来找出完整的单词。每次猜错，都会增加错误次数，达到上限则游戏失败。
+    *   **玩法**: 输入字母进行猜测。
+
+5.  **智能五子棋 (Gobang AI)**
+    *   **描述**: 经典的五子棋游戏，玩家执黑棋先手，与 AI 执白棋对战。目标是先将五个棋子连成一线（横、竖、斜均可）。
+    *   **玩法**: 点击棋盘的交叉点落子。
+
+## 🛠️ 技术栈
+
+-   **后端**: Python, Flask, Flask-SocketIO
+-   **前端**: HTML, CSS, JavaScript
+-   **实时通信**: Socket.IO
+-   **异步服务**: eventlet (或 gevent，根据 Flask-SocketIO 配置)
+
+## 🚀 如何运行
+
+### 1. 环境要求
+-   Python 3.7+
+-   pip (Python 包管理工具)
+
+### 2. 安装依赖
+克隆项目到本地后，在项目根目录下打开终端，运行以下命令安装所需依赖：
+```bash
+pip install -r requirements.txt
+```
+
+### 3. 启动应用
+安装完依赖后，运行主应用程序文件：
+```bash
+python games/tank_game/main.py
+```
+该命令会启动 Flask 开发服务器，默认情况下，应用会运行在 `http://localhost:5000` 或 `http://0.0.0.0:5000`。请留意终端输出的具体地址。
+
+### 4. 访问大厅
+打开您的网页浏览器，访问上一步中终端输出的地址 (通常是 `http://localhost:5000`)。您应该能看到游戏大厅页面。
+
+## 🎮 游戏玩法
+
+1.  进入游戏大厅后，您会看到所有可玩游戏的卡片列表。
+2.  点击您感兴趣的游戏卡片。
+3.  页面会跳转到对应游戏的界面，游戏会自动开始或根据提示开始。
+4.  遵循各游戏的具体操作指示进行游玩。
+5.  大部分游戏提供“重新开始”按钮，以及“返回游戏大厅”的链接。
+
+## 🤝 贡献代码 (可选)
+
+如果您对改进此项目感兴趣，欢迎提交 Pull Request 或开启 Issue 讨论。
+
+## 📄 开源协议 (可选)
+
+本项目可采用 MIT 开源协议。 (具体请根据您的选择添加)
