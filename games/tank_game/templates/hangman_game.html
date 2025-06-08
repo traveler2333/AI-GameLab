@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>猜单词 (Hangman)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hangman_style.css') }}">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="game-container">
+        <h1>猜单词 (Hangman)</h1>
+        <div id="hangmanDrawing">
+            <!-- Could be SVG/Canvas later, for now just text feedback -->
+            <p>剩余错误次数: <span id="hangmanErrorsLeft">6</span></p>
+        </div>
+        <div id="wordDisplay" class="word-display"></div>
+        <div id="guessedLettersDisplay">已猜字母: <span></span></div>
+        <div id="gameStatusDisplay" class="game-status"></div>
+        <div class="input-area">
+            <input type="text" id="letterInput" maxlength="1" placeholder="输入一个字母">
+            <button id="guessButton">猜!</button>
+        </div>
+        <button id="hangmanRestartButton">重新开始</button>
+        <p><a href="{{ url_for('lobby') }}">返回游戏大厅</a></p>
+    </div>
+    <script src="{{ url_for('static', filename='js/hangman_script.js') }}"></script>
+</body>
+</html>

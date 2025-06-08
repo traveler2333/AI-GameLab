@@ -1,5 +1,5 @@
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif; /* Changed font */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -48,15 +48,20 @@ h1 {
     background-color: #2ecc71; /* Green */
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 25px; /* Consistent padding */
     font-size: 1em;
-    border-radius: 5px;
+    border-radius: 8px; /* Consistent radius */
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s, transform 0.1s ease; /* Consistent transition */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Consistent shadow */
 }
 
 #restartButtonSnake:hover {
     background-color: #27ae60; /* Darker green */
+    transform: translateY(-1px); /* Consistent hover */
+}
+#restartButtonSnake:active {
+    transform: translateY(0px); /* Consistent active */
 }
 
 a {

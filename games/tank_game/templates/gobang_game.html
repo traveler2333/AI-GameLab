@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智能五子棋</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gobang_style.css') }}">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="game-container">
+        <h1>智能五子棋</h1>
+        <div id="gobangBoardContainer">
+            <canvas id="gobangCanvas"></canvas>
+        </div>
+        <div id="gobangGameStatus" class="game-status">等待游戏开始...</div>
+        <button id="gobangRestartButton">重新开始</button>
+        <p><a href="{{ url_for('lobby') }}">返回游戏大厅</a></p>
+    </div>
+    <script src="{{ url_for('static', filename='js/gobang_script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+body {
+    font-family: 'Roboto', sans-serif; /* Changed font */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #e9ebee; /* Light greyish blue */
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.game-container {
+    background-color: #ffffff;
+    padding: 20px 30px 30px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #3b5998; /* Facebook-like blue */
+    margin-bottom: 20px;
+}
+
+#gobangBoardContainer {
+    margin: 0 auto 20px auto;
+    display: inline-block;
+    border: 2px solid #ccd0d5;
+    background-color: #f5deb3;
+}
+
+#gobangCanvas {
+    display: block;
+    cursor: pointer;
+}
+
+.game-status {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4b4f56;
+    min-height: 25px;
+}
+
+#gobangRestartButton {
+    background-color: #42b72a; /* Green button */
+    color: white;
+    border: none;
+    padding: 12px 25px; /* Consistent padding */
+    font-size: 1em;
+    border-radius: 8px; /* Consistent radius */
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s ease; /* Consistent transition */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Consistent shadow */
+    margin-bottom: 15px;
+}
+
+#gobangRestartButton:hover {
+    background-color: #36a420; /* Darker green */
+    transform: translateY(-1px); /* Consistent hover */
+}
+#gobangRestartButton:active {
+    transform: translateY(0px); /* Consistent active */
+}
+
+a {
+    color: #3b5998;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+a:hover {
+    text-decoration: underline;
+}
